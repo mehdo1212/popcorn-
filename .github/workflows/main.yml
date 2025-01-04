@@ -1,0 +1,32 @@
+name: Update Jokes File
+
+on:
+  schedule:
+    - cron: "0 */12 * * *" # Runs every 12 hours
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-jokes:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Update jokes file
+        run: |
+          if [[ -f sourcejokes.txt ]]; then
+            cp sourcejokes.txt jokes.txt
+            echo "Jokes file updated successfully."
+          else
+            echo "Error: sourcejokes.txt not found."
+            exit 1
+          fi
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add jokes.txt
+          git commit -m "Update jokes.txt from sourcejokes.txt"
+          git push
